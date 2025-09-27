@@ -2,41 +2,79 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
+/* SACCOVision Financial Platform Design System
+   Professional financial services color palette with trust-inspiring blues and growth-representing greens
+   All colors MUST be HSL.
 */
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    /* Core Brand Colors - Professional Financial Theme */
+    --background: 248 51% 99%;
+    --foreground: 216 25% 15%;
 
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card-foreground: 216 25% 15%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover-foreground: 216 25% 15%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    /* Primary: Deep Financial Blue - Trust & Stability */
+    --primary: 216 82% 24%;
+    --primary-foreground: 0 0% 100%;
+    --primary-light: 216 82% 35%;
+    --primary-dark: 216 82% 18%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    /* Secondary: Warm Financial Gray */
+    --secondary: 216 12% 96%;
+    --secondary-foreground: 216 25% 25%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    /* Success: Financial Green - Growth & Profit */
+    --success: 142 76% 36%;
+    --success-foreground: 0 0% 100%;
+    --success-light: 142 76% 45%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    /* Warning: Financial Amber */
+    --warning: 38 92% 50%;
+    --warning-foreground: 0 0% 100%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    /* Error: Professional Red */
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    /* UI Elements */
+    --muted: 216 12% 96%;
+    --muted-foreground: 216 15% 45%;
 
-    --radius: 0.5rem;
+    --accent: 142 76% 94%;
+    --accent-foreground: 142 76% 25%;
+
+    --border: 216 12% 90%;
+    --input: 216 12% 94%;
+    --ring: 216 82% 24%;
+
+    /* Financial Dashboard Specific */
+    --chart-primary: 216 82% 24%;
+    --chart-secondary: 142 76% 36%;
+    --chart-tertiary: 38 92% 50%;
+    --chart-quaternary: 263 55% 52%;
+    --chart-grid: 216 12% 85%;
+
+    /* Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(216 82% 24%), hsl(216 82% 35%));
+    --gradient-success: linear-gradient(135deg, hsl(142 76% 36%), hsl(142 76% 45%));
+    --gradient-dashboard: linear-gradient(180deg, hsl(248 51% 99%), hsl(216 12% 98%));
+
+    /* Shadows */
+    --shadow-card: 0 4px 6px -1px hsl(216 25% 15% / 0.1), 0 2px 4px -1px hsl(216 25% 15% / 0.06);
+    --shadow-elevated: 0 10px 15px -3px hsl(216 25% 15% / 0.1), 0 4px 6px -2px hsl(216 25% 15% / 0.05);
+    --shadow-financial: 0 20px 25px -5px hsl(216 82% 24% / 0.1), 0 10px 10px -5px hsl(216 82% 24% / 0.04);
+
+    /* Transitions */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-bounce: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+
+    --radius: 0.75rem;
 
     --sidebar-background: 0 0% 98%;
 
