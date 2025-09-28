@@ -28,7 +28,7 @@ const mainNavItems = [
   { title: "Loans", url: "/loans", icon: DollarSign },
   { title: "Savings", url: "/savings", icon: PiggyBank },
   { title: "Members", url: "/members", icon: Users },
-  { title: "Contributions", url: "/contributions", icon: CreditCard },
+  { title: "Contributors", url: "/contributors", icon: CreditCard },
   { title: "Analytics", url: "/analytics", icon: TrendingUp },
 ];
 

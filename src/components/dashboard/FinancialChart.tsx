@@ -23,7 +23,8 @@ interface FinancialChartProps {
   data: ChartData[];
   type: "line" | "bar" | "area";
   dataKey: string;
-  xAxisKey: string;
+  xAxisKey?: string;
+  secondaryDataKey?: string;
   color?: string;
   height?: number;
 }
@@ -34,7 +35,8 @@ export function FinancialChart({
   data,
   type,
   dataKey,
-  xAxisKey,
+  xAxisKey = "month",
+  secondaryDataKey,
   color = "hsl(var(--chart-primary))",
   height = 300,
 }: FinancialChartProps) {
@@ -78,6 +80,16 @@ export function FinancialChart({
               dot={{ fill: color, strokeWidth: 2, r: 4 }}
               activeDot={{ r: 6, stroke: color, strokeWidth: 2 }}
             />
+            {secondaryDataKey && (
+              <Line
+                type="monotone"
+                dataKey={secondaryDataKey}
+                stroke="hsl(var(--muted-foreground))"
+                strokeWidth={2}
+                strokeDasharray="5 5"
+                dot={{ fill: "hsl(var(--muted-foreground))", strokeWidth: 2, r: 4 }}
+              />
+            )}
           </LineChart>
         );
 
@@ -143,6 +155,17 @@ export function FinancialChart({
               fill={color}
               strokeWidth={2}
             />
+            {secondaryDataKey && (
+              <Area
+                type="monotone"
+                dataKey={secondaryDataKey}
+                stroke="hsl(var(--muted-foreground))"
+                fillOpacity={0.05}
+                fill="hsl(var(--muted-foreground))"
+                strokeWidth={2}
+                strokeDasharray="5 5"
+              />
+            )}
           </AreaChart>
         );
 
