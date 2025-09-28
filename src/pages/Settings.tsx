@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -30,11 +31,30 @@ import {
   AlertTriangle,
   CheckCircle,
   Info,
+  User,
+  CreditCard,
+  Crown,
+  LogOut,
+  Camera,
+  Trash2,
+  Eye,
+  EyeOff,
 } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useToast } from "@/hooks/use-toast";
 
 const Settings = () => {
   const { toast } = useToast();
+  const [searchParams] = useSearchParams();
+  const [activeTab, setActiveTab] = useState(searchParams.get('tab') || 'organization');
+  const [showPassword, setShowPassword] = useState(false);
+
+  useEffect(() => {
+    const tab = searchParams.get('tab');
+    if (tab) {
+      setActiveTab(tab);
+    }
+  }, [searchParams]);
   const [settings, setSettings] = useState({
     organizationName: "Community SACCO",
     registrationNumber: "SACCO-2024-001",
@@ -84,33 +104,350 @@ const Settings = () => {
           </Button>
         </div>
 
-        <Tabs defaultValue="organization" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-6 bg-muted/50">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+          <TabsList className="grid w-full grid-cols-5 lg:grid-cols-10 bg-muted/50">
             <TabsTrigger value="organization" className="gap-2">
               <Building2 className="w-4 h-4" />
-              Organization
+              <span className="hidden sm:inline">Organization</span>
+            </TabsTrigger>
+            <TabsTrigger value="profile" className="gap-2">
+              <User className="w-4 h-4" />
+              <span className="hidden sm:inline">Profile</span>
             </TabsTrigger>
             <TabsTrigger value="users" className="gap-2">
               <Users className="w-4 h-4" />
-              Users
+              <span className="hidden sm:inline">Users</span>
+            </TabsTrigger>
+            <TabsTrigger value="team" className="gap-2">
+              <Users className="w-4 h-4" />
+              <span className="hidden sm:inline">Team</span>
             </TabsTrigger>
             <TabsTrigger value="financial" className="gap-2">
               <DollarSign className="w-4 h-4" />
-              Financial
+              <span className="hidden sm:inline">Financial</span>
+            </TabsTrigger>
+            <TabsTrigger value="billing" className="gap-2">
+              <CreditCard className="w-4 h-4" />
+              <span className="hidden sm:inline">Billing</span>
+            </TabsTrigger>
+            <TabsTrigger value="subscription" className="gap-2">
+              <Crown className="w-4 h-4" />
+              <span className="hidden sm:inline">Subscription</span>
             </TabsTrigger>
             <TabsTrigger value="security" className="gap-2">
               <Shield className="w-4 h-4" />
-              Security
+              <span className="hidden sm:inline">Security</span>
             </TabsTrigger>
             <TabsTrigger value="notifications" className="gap-2">
               <Bell className="w-4 h-4" />
-              Notifications
+              <span className="hidden sm:inline">Notifications</span>
             </TabsTrigger>
             <TabsTrigger value="system" className="gap-2">
               <Database className="w-4 h-4" />
-              System
+              <span className="hidden sm:inline">System</span>
             </TabsTrigger>
           </TabsList>
+
+          {/* Profile Settings */}
+          <TabsContent value="profile" className="space-y-6">
+            <Card className="shadow-card">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <User className="w-5 h-5 text-primary" />
+                  Personal Information
+                </CardTitle>
+                <CardDescription>
+                  Manage your personal profile and account preferences
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="flex items-center gap-6">
+                  <div className="relative">
+                    <div className="w-24 h-24 rounded-full bg-primary/10 flex items-center justify-center">
+                      <User className="w-12 h-12 text-primary" />
+                    </div>
+                    <Button size="sm" className="absolute -bottom-2 -right-2 rounded-full w-8 h-8 p-0">
+                      <Camera className="w-4 h-4" />
+                    </Button>
+                  </div>
+                  <div className="space-y-2">
+                    <h3 className="font-medium">Profile Photo</h3>
+                    <p className="text-sm text-muted-foreground">
+                      Upload a new avatar for your account
+                    </p>
+                    <div className="flex gap-2">
+                      <Button variant="outline" size="sm">Change Photo</Button>
+                      <Button variant="ghost" size="sm">Remove</Button>
+                    </div>
+                  </div>
+                </div>
+                
+                <Separator />
+                
+                <div className="grid gap-4 md:grid-cols-2">
+                  <div className="space-y-2">
+                    <Label htmlFor="firstName">First Name</Label>
+                    <Input id="firstName" defaultValue="John" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="lastName">Last Name</Label>
+                    <Input id="lastName" defaultValue="Doe" />
+                  </div>
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="email">Email Address</Label>
+                  <Input id="email" type="email" defaultValue="john.doe@saccovision.com" />
+                </div>
+                
+                <div className="grid gap-4 md:grid-cols-2">
+                  <div className="space-y-2">
+                    <Label htmlFor="phone">Phone Number</Label>
+                    <Input id="phone" defaultValue="+254 700 123 456" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="role">Role</Label>
+                    <Input id="role" defaultValue="System Administrator" disabled />
+                  </div>
+                </div>
+                
+                <Separator />
+                
+                <div className="space-y-4">
+                  <h3 className="font-medium">Change Password</h3>
+                  <div className="space-y-2">
+                    <Label htmlFor="currentPassword">Current Password</Label>
+                    <div className="relative">
+                      <Input 
+                        id="currentPassword" 
+                        type={showPassword ? "text" : "password"}
+                        placeholder="Enter current password" 
+                      />
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                        onClick={() => setShowPassword(!showPassword)}
+                      >
+                        {showPassword ? (
+                          <EyeOff className="h-4 w-4" />
+                        ) : (
+                          <Eye className="h-4 w-4" />
+                        )}
+                      </Button>
+                    </div>
+                  </div>
+                  <div className="grid gap-4 md:grid-cols-2">
+                    <div className="space-y-2">
+                      <Label htmlFor="newPassword">New Password</Label>
+                      <Input 
+                        id="newPassword" 
+                        type={showPassword ? "text" : "password"}
+                        placeholder="Enter new password" 
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="confirmPassword">Confirm Password</Label>
+                      <Input 
+                        id="confirmPassword" 
+                        type={showPassword ? "text" : "password"}
+                        placeholder="Confirm new password" 
+                      />
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="flex justify-end gap-2">
+                  <Button variant="outline">Cancel</Button>
+                  <Button onClick={() => handleSave('Profile')}>Save Changes</Button>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Team Management */}
+          <TabsContent value="team" className="space-y-6">
+            <Card className="shadow-card">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Users className="w-5 h-5 text-primary" />
+                  Team Members
+                </CardTitle>
+                <CardDescription>
+                  Manage your team members and their access levels
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="flex justify-between items-center">
+                  <div>
+                    <h3 className="font-medium">Team Overview</h3>
+                    <p className="text-sm text-muted-foreground">19 active team members</p>
+                  </div>
+                  <Button>Invite Member</Button>
+                </div>
+                
+                <Separator />
+                
+                <div className="space-y-3">
+                  {[
+                    { name: "John Doe", role: "Administrator", email: "john.doe@saccovision.com", status: "Active" },
+                    { name: "Sarah Wilson", role: "Manager", email: "sarah.wilson@saccovision.com", status: "Active" },
+                    { name: "Mike Johnson", role: "Teller", email: "mike.johnson@saccovision.com", status: "Pending" },
+                  ].map((member, index) => (
+                    <div key={index} className="flex items-center justify-between p-4 border rounded-lg">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                          <User className="w-5 h-5 text-primary" />
+                        </div>
+                        <div>
+                          <p className="font-medium">{member.name}</p>
+                          <p className="text-sm text-muted-foreground">{member.email}</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Badge variant={member.status === "Active" ? "default" : "secondary"}>
+                          {member.status}
+                        </Badge>
+                        <Badge variant="outline">{member.role}</Badge>
+                        <Button variant="ghost" size="sm">
+                          <Key className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Billing */}
+          <TabsContent value="billing" className="space-y-6">
+            <div className="grid gap-6 lg:grid-cols-2">
+              <Card className="shadow-card">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <CreditCard className="w-5 h-5 text-primary" />
+                    Payment Methods
+                  </CardTitle>
+                  <CardDescription>
+                    Manage your payment methods and billing information
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="border rounded-lg p-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="w-12 h-8 bg-gradient-to-r from-blue-500 to-blue-600 rounded flex items-center justify-center">
+                          <span className="text-white font-bold text-xs">VISA</span>
+                        </div>
+                        <div>
+                          <p className="font-medium">•••• •••• •••• 4242</p>
+                          <p className="text-sm text-muted-foreground">Expires 12/25</p>
+                        </div>
+                      </div>
+                      <Badge variant="outline" className="bg-success/10 text-success border-success/20">
+                        Primary
+                      </Badge>
+                    </div>
+                  </div>
+                  <Button variant="outline" className="w-full">
+                    Add Payment Method
+                  </Button>
+                </CardContent>
+              </Card>
+
+              <Card className="shadow-card">
+                <CardHeader>
+                  <CardTitle>Billing History</CardTitle>
+                  <CardDescription>
+                    View your recent billing history and invoices
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  {[
+                    { date: "Dec 1, 2023", amount: "$29.99", status: "Paid" },
+                    { date: "Nov 1, 2023", amount: "$29.99", status: "Paid" },
+                    { date: "Oct 1, 2023", amount: "$29.99", status: "Paid" },
+                  ].map((invoice, index) => (
+                    <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
+                      <div>
+                        <p className="font-medium">{invoice.date}</p>
+                        <p className="text-sm text-muted-foreground">Monthly subscription</p>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="font-medium">{invoice.amount}</span>
+                        <Badge variant="outline" className="bg-success/10 text-success border-success/20">
+                          {invoice.status}
+                        </Badge>
+                      </div>
+                    </div>
+                  ))}
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+
+          {/* Subscription */}
+          <TabsContent value="subscription" className="space-y-6">
+            <Card className="shadow-card">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Crown className="w-5 h-5 text-primary" />
+                  Subscription Plan
+                </CardTitle>
+                <CardDescription>
+                  Manage your SACCOVision subscription and features
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="border rounded-lg p-6 bg-primary/5">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h3 className="text-lg font-semibold">Professional Plan</h3>
+                      <p className="text-muted-foreground">Perfect for growing SACCOs</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-2xl font-bold">$29.99</p>
+                      <p className="text-sm text-muted-foreground">/month</p>
+                    </div>
+                  </div>
+                  
+                  <Separator className="my-4" />
+                  
+                  <div className="grid gap-2 md:grid-cols-2">
+                    <div className="flex items-center gap-2">
+                      <CheckCircle className="w-4 h-4 text-success" />
+                      <span className="text-sm">Up to 500 members</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <CheckCircle className="w-4 h-4 text-success" />
+                      <span className="text-sm">Advanced analytics</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <CheckCircle className="w-4 h-4 text-success" />
+                      <span className="text-sm">Priority support</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <CheckCircle className="w-4 h-4 text-success" />
+                      <span className="text-sm">Custom reports</span>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="flex justify-between items-center">
+                  <div>
+                    <p className="font-medium">Next billing date</p>
+                    <p className="text-sm text-muted-foreground">January 1, 2024</p>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button variant="outline">Change Plan</Button>
+                    <Button variant="destructive">Cancel Subscription</Button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
 
           {/* Organization Settings */}
           <TabsContent value="organization" className="space-y-6">
