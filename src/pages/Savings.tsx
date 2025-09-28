@@ -6,6 +6,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Wallet, TrendingUp, PiggyBank, Users, Plus, Download } from "lucide-react";
+import { useEffect, useState } from "react";
+import { getAccounts, getTransactions } from "@/lib/api";
 
 export default function Savings() {
   const savingsMetrics = [
@@ -61,13 +63,30 @@ export default function Savings() {
     { key: "status", label: "Status", type: "status" as const }
   ];
 
-  const savingsData = [
-    { accountNo: "SAV001", member: "Mary Wanjiku", balance: 45000, lastDeposit: 5000, depositDate: "2024-01-15", status: "Active" },
-    { accountNo: "SAV002", member: "John Kimani", balance: 32000, lastDeposit: 3000, depositDate: "2024-01-12", status: "Active" },
-    { accountNo: "SAV003", member: "Grace Achieng", balance: 67000, lastDeposit: 7000, depositDate: "2024-01-14", status: "Active" },
-    { accountNo: "SAV004", member: "Peter Mwangi", balance: 28000, lastDeposit: 2500, depositDate: "2023-12-28", status: "Dormant" },
-    { accountNo: "SAV005", member: "Sarah Nyong'o", balance: 51000, lastDeposit: 4500, depositDate: "2024-01-13", status: "Active" }
-  ];
+  const [savingsData, setSavingsData] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [selectedAccount, setSelectedAccount] = useState<string | null>(null);
+  const [transactions, setTransactions] = useState<any[]>([]);
+  const [txLoading, setTxLoading] = useState(false);
+  const [txError, setTxError] = useState("");
+
+  useEffect(() => {
+    setLoading(true);
+    getAccounts()
+      .then((data) => setSavingsData(data))
+      .catch((err) => setError("Failed to fetch savings accounts"))
+      .finally(() => setLoading(false));
+  }, []);
+
+  useEffect(() => {
+    if (!selectedAccount) return;
+    setTxLoading(true);
+    getTransactions(selectedAccount)
+      .then((data) => setTransactions(data))
+      .catch(() => setTxError("Failed to fetch transactions"))
+      .finally(() => setTxLoading(false));
+  }, [selectedAccount]);
 
   return (
     <DashboardLayout>
@@ -147,13 +166,40 @@ export default function Savings() {
           </Card>
         </div>
 
+        {error && <div className="text-red-500 mb-2">{error}</div>}
         <DataTable
           title="Member Savings Accounts"
           description="Current savings accounts and balances"
           columns={savingsColumns}
           data={savingsData}
           actions
+          onRowClick={(row) => setSelectedAccount(row.accountNo || row.id)}
         />
+
+        {selectedAccount && (
+          <Card className="mt-6">
+            <CardHeader>
+              <CardTitle>Transactions for Account {selectedAccount}</CardTitle>
+              <CardDescription>Recent transactions for this savings account</CardDescription>
+            </CardHeader>
+            <CardContent>
+              {txError && <div className="text-red-500 mb-2">{txError}</div>}
+              <DataTable
+                title="Transactions"
+                description="All transactions for this account"
+                columns={[
+                  { key: "id", label: "Transaction ID", type: "text" },
+                  { key: "type", label: "Type", type: "text" },
+                  { key: "amount", label: "Amount", type: "currency" },
+                  { key: "description", label: "Description", type: "text" },
+                  { key: "createdAt", label: "Date", type: "date" },
+                ]}
+                data={transactions}
+                actions={false}
+              />
+            </CardContent>
+          </Card>
+        )}
       </div>
     </DashboardLayout>
   );

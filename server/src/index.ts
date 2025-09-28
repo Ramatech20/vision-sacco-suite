@@ -5,7 +5,7 @@ import express from "express";
 import helmet from "helmet";
 import cors from "cors";
 import rateLimit from "express-rate-limit";
-import { createConnection } from "typeorm";
+import { AppDataSource } from "./data-source";
 
 const app = express();
 app.use(helmet());
@@ -35,7 +35,7 @@ app.use(errorHandler);
 
 const PORT = process.env.PORT || 4000;
 
-createConnection().then(() => {
+AppDataSource.initialize().then(() => {
   app.listen(PORT, () => console.log(`Server running on ${PORT}`));
 }).catch(err => {
   console.error("DB connection failed", err);

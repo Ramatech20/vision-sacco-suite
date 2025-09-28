@@ -33,44 +33,20 @@ const loanReportData = [
   { month: "Jun", disbursed: 67000, repaid: 55000, outstanding: 166000 },
 ];
 
-const memberReports = [
-  {
-    id: "M001",
-    name: "Alice Johnson",
-    loanBalance: 15000,
-    savingsBalance: 8500,
-    contributions: 2400,
-    status: "active",
-    joinDate: "2023-01-15",
-  },
-  {
-    id: "M002",
-    name: "Bob Smith",
-    loanBalance: 0,
-    savingsBalance: 12000,
-    contributions: 3600,
-    status: "active",
-    joinDate: "2022-11-20",
-  },
-  {
-    id: "M003",
-    name: "Carol Wilson",
-    loanBalance: 8500,
-    savingsBalance: 5200,
-    contributions: 1800,
-    status: "pending",
-    joinDate: "2023-03-10",
-  },
-  {
-    id: "M004",
-    name: "David Brown",
-    loanBalance: 22000,
-    savingsBalance: 3200,
-    contributions: 1200,
-    status: "overdue",
-    joinDate: "2022-08-05",
-  },
-];
+import { useEffect } from "react";
+import { getReports } from "@/lib/api";
+
+const [memberReports, setMemberReports] = useState<any[]>([]);
+const [loading, setLoading] = useState(false);
+const [error, setError] = useState("");
+
+useEffect(() => {
+  setLoading(true);
+  getReports("member-stats")
+    .then((data) => setMemberReports(data))
+    .catch(() => setError("Failed to fetch member reports"))
+    .finally(() => setLoading(false));
+}, []);
 
 const memberColumns = [
   { key: "id", label: "Member ID", type: "text" as const },
@@ -267,6 +243,7 @@ const Reports = () => {
           </TabsContent>
 
           <TabsContent value="members" className="space-y-6">
+            {error && <div className="text-red-500 mb-2">{error}</div>}
             <DataTable
               title="Member Financial Summary"
               description="Comprehensive view of member accounts and activity"

@@ -6,6 +6,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { CreditCard, TrendingUp, AlertTriangle, Users, Plus, Download } from "lucide-react";
+import { useEffect, useState } from "react";
+import { getReports } from "@/lib/api";
 
 export default function Loans() {
   const loanMetrics = [
@@ -61,13 +63,17 @@ export default function Loans() {
     { key: "status", label: "Status", type: "status" as const }
   ];
 
-  const loansData = [
-    { loanId: "LN001", borrower: "Mary Wanjiku", amount: 50000, balance: 35000, dueDate: "2024-01-15", status: "Current" },
-    { loanId: "LN002", borrower: "John Kimani", amount: 75000, balance: 60000, dueDate: "2024-01-20", status: "Current" },
-    { loanId: "LN003", borrower: "Grace Achieng", amount: 30000, balance: 15000, dueDate: "2023-12-30", status: "Overdue" },
-    { loanId: "LN004", borrower: "Peter Mwangi", amount: 100000, balance: 85000, dueDate: "2024-02-05", status: "Current" },
-    { loanId: "LN005", borrower: "Sarah Nyong'o", amount: 25000, balance: 0, dueDate: "2024-01-10", status: "Paid" }
-  ];
+  const [loansData, setLoansData] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    setLoading(true);
+    getReports("balance-sheet")
+      .then((data) => setLoansData(data))
+      .catch(() => setError("Failed to fetch loans"))
+      .finally(() => setLoading(false));
+  }, []);
 
   return (
     <DashboardLayout>
@@ -141,6 +147,7 @@ export default function Loans() {
           </Card>
         </div>
 
+        {error && <div className="text-red-500 mb-2">{error}</div>}
         <DataTable
           title="Recent Loan Applications"
           description="Latest loan applications and their status"

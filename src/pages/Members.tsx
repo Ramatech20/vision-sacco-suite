@@ -7,6 +7,9 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Users, UserPlus, UserCheck, TrendingUp, Plus, Download, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import { useEffect, useState } from "react";
+import { toast } from "@/components/ui/sonner";
+import { getMembers } from "@/lib/api";
 
 export default function Members() {
   const memberMetrics = [
@@ -62,13 +65,20 @@ export default function Members() {
     { key: "status", label: "Status", type: "status" as const }
   ];
 
-  const membersData = [
-    { memberNo: "M001", name: "Mary Wanjiku Kiprotich", phone: "+254 701 234567", joinDate: "2023-01-15", savings: 45000, status: "Active" },
-    { memberNo: "M002", name: "John Kimani Mwangi", phone: "+254 722 345678", joinDate: "2023-02-20", savings: 32000, status: "Active" },
-    { memberNo: "M003", name: "Grace Achieng Odhiambo", phone: "+254 733 456789", joinDate: "2023-03-10", savings: 67000, status: "Active" },
-    { memberNo: "M004", name: "Peter Mwangi Njoroge", phone: "+254 744 567890", joinDate: "2022-12-05", savings: 28000, status: "Inactive" },
-    { memberNo: "M005", name: "Sarah Nyong'o Otieno", phone: "+254 755 678901", joinDate: "2023-04-18", savings: 51000, status: "Active" }
-  ];
+  const [membersData, setMembersData] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    setLoading(true);
+    getMembers()
+      .then((data) => setMembersData(data))
+      .catch((err) => {
+        toast.error("Failed to fetch members");
+        setError("Failed to fetch members");
+      })
+      .finally(() => setLoading(false));
+  }, []);
 
   return (
     <DashboardLayout>
@@ -152,11 +162,13 @@ export default function Members() {
             </div>
           </CardHeader>
           <CardContent>
+            {/* Error feedback handled by toast notification */}
             <DataTable
               title="Member List"
               description="Complete member directory with key information"
               columns={memberColumns}
               data={membersData}
+              // loading={loading} // Removed unsupported prop
               actions
             />
           </CardContent>

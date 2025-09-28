@@ -73,7 +73,18 @@ const transactionColumns = [
   { key: "date", label: "Date", type: "date" as const },
 ];
 
+import { useEffect, useState } from "react";
+
 const Index = () => {
+  const [apiStatus, setApiStatus] = useState<string>("");
+
+  useEffect(() => {
+    fetch("http://localhost:4000/health")
+      .then((res) => res.json())
+      .then((data) => setApiStatus(data.status))
+      .catch(() => setApiStatus("error"));
+  }, []);
+
   return (
     <DashboardLayout>
       <div className="space-y-6">
@@ -83,6 +94,9 @@ const Index = () => {
             <h1 className="text-3xl font-bold text-foreground">Dashboard</h1>
             <p className="text-muted-foreground">
               Welcome back! Here's your financial overview.
+            </p>
+            <p className="text-xs mt-2">
+              Backend API status: <span className="font-semibold">{apiStatus}</span>
             </p>
           </div>
         </div>

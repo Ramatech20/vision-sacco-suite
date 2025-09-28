@@ -31,6 +31,7 @@ interface DataTableProps {
   columns: Column[];
   data: Record<string, any>[];
   actions?: boolean;
+  onRowClick?: (row: Record<string, any>) => void;
 }
 
 export function DataTable({
@@ -39,6 +40,7 @@ export function DataTable({
   columns,
   data,
   actions = true,
+  onRowClick,
 }: DataTableProps) {
   const formatCellValue = (value: any, type: ColumnType = "text") => {
     switch (type) {
@@ -95,7 +97,8 @@ export function DataTable({
               {data.map((row, index) => (
                 <TableRow
                   key={index}
-                  className="hover:bg-muted/50 transition-colors"
+                  className="hover:bg-muted/50 transition-colors cursor-pointer"
+                  onClick={() => onRowClick && onRowClick(row)}
                 >
                   {columns.map((column) => (
                     <TableCell key={column.key} className="py-3">
