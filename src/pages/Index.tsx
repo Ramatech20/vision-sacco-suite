@@ -91,7 +91,7 @@ const Index = () => {
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
           <MetricCard
             title="Total Loans"
-            value="$387,250"
+              value="KSh 387,250"
             change="+12.5%"
             changeType="positive"
             icon={DollarSign}
@@ -99,7 +99,7 @@ const Index = () => {
           />
           <MetricCard
             title="Total Savings"
-            value="$156,890"
+              value="KSh 156,890"
             change="+8.2%"
             changeType="positive"
             icon={PiggyBank}
