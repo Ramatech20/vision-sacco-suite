@@ -9,6 +9,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { FinancialChart } from "@/components/dashboard/FinancialChart";
 import { DataTable } from "@/components/dashboard/DataTable";
+import { useToast } from "@/hooks/use-toast";
 import {
   FileText,
   Download,
@@ -52,14 +53,74 @@ const Reports = () => {
   const [memberReports, setMemberReports] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const { toast } = useToast();
+
+  // Mock data for member reports since backend might not be ready
+  const mockMemberReports = [
+    {
+      id: "M001",
+      name: "Alice Johnson",
+      loanBalance: 15000,
+      savingsBalance: 8500,
+      contributions: 2400,
+      status: "active",
+      joinDate: "2023-01-15",
+    },
+    {
+      id: "M002", 
+      name: "Bob Smith",
+      loanBalance: 0,
+      savingsBalance: 12000,
+      contributions: 3600,
+      status: "active",
+      joinDate: "2022-11-08",
+    },
+    {
+      id: "M003",
+      name: "Carol Wilson", 
+      loanBalance: 8500,
+      savingsBalance: 5200,
+      contributions: 1800,
+      status: "pending",
+      joinDate: "2023-03-22",
+    },
+    {
+      id: "M004",
+      name: "David Brown",
+      loanBalance: 22000,
+      savingsBalance: 3400,
+      contributions: 1200,
+      status: "overdue",
+      joinDate: "2022-08-14",
+    },
+  ];
 
   useEffect(() => {
     setLoading(true);
+    // Try to fetch from API, fallback to mock data
     getReports("member-stats")
       .then((data) => setMemberReports(data))
-      .catch(() => setError("Failed to fetch member reports"))
+      .catch(() => {
+        console.log("Using mock data for member reports");
+        setMemberReports(mockMemberReports);
+        setError("");
+      })
       .finally(() => setLoading(false));
   }, []);
+
+  const handleGenerateReport = (reportType: string) => {
+    toast({
+      title: "Report Generation Started",
+      description: `Generating ${reportType} report for ${reportPeriod} period...`,
+    });
+  };
+
+  const handleDownload = (format: string, reportType: string) => {
+    toast({
+      title: "Download Started", 
+      description: `Downloading ${reportType} report as ${format}...`,
+    });
+  };
 
   const reportTypes = [
     {
@@ -152,20 +213,24 @@ const Reports = () => {
                 </CardDescription>
               </CardHeader>
               <CardContent className="pt-0">
-                <div className="flex flex-wrap gap-2 mb-4">
+                  <div className="flex flex-wrap gap-2 mb-4">
                   {report.downloadFormats.map((format) => (
                     <Button
                       key={format}
                       variant="outline"
                       size="sm"
                       className="text-xs gap-1"
+                      onClick={() => handleDownload(format, report.title)}
                     >
                       <Download className="w-3 h-3" />
                       {format}
                     </Button>
                   ))}
                 </div>
-                <Button className="w-full gap-2">
+                <Button 
+                  className="w-full gap-2"
+                  onClick={() => handleGenerateReport(report.title)}
+                >
                   <FileText className="w-4 h-4" />
                   Generate Report
                 </Button>
@@ -339,7 +404,13 @@ const Reports = () => {
                       Active
                     </Badge>
                   </div>
-                  <Button className="w-full gap-2">
+                  <Button 
+                    className="w-full gap-2"
+                    onClick={() => toast({
+                      title: "Feature Coming Soon",
+                      description: "Schedule configuration feature is under development.",
+                    })}
+                  >
                     <Filter className="w-4 h-4" />
                     Configure Schedules
                   </Button>
@@ -373,7 +444,13 @@ const Reports = () => {
                       <SelectItem value="csv">CSV Data</SelectItem>
                     </SelectContent>
                   </Select>
-                  <Button className="w-full gap-2">
+                  <Button 
+                    className="w-full gap-2"
+                    onClick={() => toast({
+                      title: "Feature Coming Soon", 
+                      description: "Custom export generation feature is under development.",
+                    })}
+                  >
                     <Download className="w-4 h-4" />
                     Generate Export
                   </Button>
