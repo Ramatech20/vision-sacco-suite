@@ -36,18 +36,6 @@ const loanReportData = [
 import { useEffect } from "react";
 import { getReports } from "@/lib/api";
 
-const [memberReports, setMemberReports] = useState<any[]>([]);
-const [loading, setLoading] = useState(false);
-const [error, setError] = useState("");
-
-useEffect(() => {
-  setLoading(true);
-  getReports("member-stats")
-    .then((data) => setMemberReports(data))
-    .catch(() => setError("Failed to fetch member reports"))
-    .finally(() => setLoading(false));
-}, []);
-
 const memberColumns = [
   { key: "id", label: "Member ID", type: "text" as const },
   { key: "name", label: "Name", type: "text" as const },
@@ -61,6 +49,17 @@ const memberColumns = [
 const Reports = () => {
   const [date, setDate] = useState<Date>(new Date());
   const [reportPeriod, setReportPeriod] = useState("monthly");
+  const [memberReports, setMemberReports] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    setLoading(true);
+    getReports("member-stats")
+      .then((data) => setMemberReports(data))
+      .catch(() => setError("Failed to fetch member reports"))
+      .finally(() => setLoading(false));
+  }, []);
 
   const reportTypes = [
     {
