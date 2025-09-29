@@ -1,9 +1,10 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { register } from "@/lib/api";
+import { Link } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
 
 export default function Register() {
   const [email, setEmail] = useState("");
@@ -11,19 +12,32 @@ export default function Register() {
   const [name, setName] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
+  const { toast } = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError("");
+    
     try {
-      const data = await register({ email, password, name });
-      if (data.token) {
-        localStorage.setItem("token", data.token);
-        navigate("/members");
+      const { error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          emailRedirectTo: `${window.location.origin}/`,
+          data: {
+            name,
+          }
+        }
+      });
+      
+      if (error) {
+        setError(error.message);
       } else {
-        setError("Registration failed");
+        toast({
+          title: "Registration successful!",
+          description: "Please check your email to confirm your account.",
+        });
       }
     } catch (err: any) {
       setError(err.message || "Registration failed");
@@ -33,10 +47,10 @@ export default function Register() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-muted">
+    <div className="flex items-center justify-center min-h-screen bg-gradient-dashboard">
       <Card className="w-full max-w-md shadow-card">
         <CardHeader>
-          <CardTitle>Register</CardTitle>
+          <CardTitle className="text-center">Join SACCOVision</CardTitle>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -60,11 +74,18 @@ export default function Register() {
               value={password}
               onChange={e => setPassword(e.target.value)}
               required
+              minLength={6}
             />
-            {error && <div className="text-red-500 text-sm">{error}</div>}
+            {error && <div className="text-destructive text-sm">{error}</div>}
             <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? "Registering..." : "Register"}
+              {loading ? "Creating account..." : "Create Account"}
             </Button>
+            <div className="text-center text-sm text-muted-foreground">
+              Already have an account?{" "}
+              <Link to="/login" className="text-primary hover:underline">
+                Sign in
+              </Link>
+            </div>
           </form>
         </CardContent>
       </Card>

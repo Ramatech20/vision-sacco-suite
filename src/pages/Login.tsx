@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { login } from "@/lib/api";
+import { useNavigate, Link } from "react-router-dom";
+import { useAuth } from "@/lib/auth";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -10,20 +10,18 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const { login } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError("");
+    
     try {
-      const data = await login({ email, password });
-      // Save token (if returned) and redirect
-      if (data.token) {
-        localStorage.setItem("token", data.token);
-        navigate("/members");
-      } else {
-        setError("Login failed");
+      const { error } = await login(email, password);
+      if (error) {
+        setError(error.message);
       }
     } catch (err: any) {
       setError(err.message || "Login failed");
@@ -33,10 +31,10 @@ export default function Login() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-muted">
+    <div className="flex items-center justify-center min-h-screen bg-gradient-dashboard">
       <Card className="w-full max-w-md shadow-card">
         <CardHeader>
-          <CardTitle>Login</CardTitle>
+          <CardTitle className="text-center">SACCOVision Login</CardTitle>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -54,10 +52,16 @@ export default function Login() {
               onChange={e => setPassword(e.target.value)}
               required
             />
-            {error && <div className="text-red-500 text-sm">{error}</div>}
+            {error && <div className="text-destructive text-sm">{error}</div>}
             <Button type="submit" className="w-full" disabled={loading}>
               {loading ? "Logging in..." : "Login"}
             </Button>
+            <div className="text-center text-sm text-muted-foreground">
+              Don't have an account?{" "}
+              <Link to="/register" className="text-primary hover:underline">
+                Sign up
+              </Link>
+            </div>
           </form>
         </CardContent>
       </Card>
