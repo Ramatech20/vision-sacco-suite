@@ -14,8 +14,204 @@ export type Database = {
   }
   public: {
     Tables: {
+      accounts: {
+        Row: {
+          account_number: string
+          account_type: string
+          balance: number | null
+          created_at: string | null
+          id: string
+          interest_rate: number | null
+          member_id: string | null
+          opened_date: string | null
+          status: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          account_number: string
+          account_type: string
+          balance?: number | null
+          created_at?: string | null
+          id?: string
+          interest_rate?: number | null
+          member_id?: string | null
+          opened_date?: string | null
+          status?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          account_number?: string
+          account_type?: string
+          balance?: number | null
+          created_at?: string | null
+          id?: string
+          interest_rate?: number | null
+          member_id?: string | null
+          opened_date?: string | null
+          status?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "accounts_member_id_fkey"
+            columns: ["member_id"]
+            isOneToOne: false
+            referencedRelation: "members"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      loans: {
+        Row: {
+          account_id: string | null
+          created_at: string | null
+          disbursement_date: string | null
+          duration_months: number
+          guarantor_1: string | null
+          guarantor_2: string | null
+          id: string
+          interest_rate: number
+          loan_number: string
+          maturity_date: string | null
+          member_id: string | null
+          monthly_payment: number
+          outstanding_balance: number
+          principal_amount: number
+          purpose: string | null
+          status: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          account_id?: string | null
+          created_at?: string | null
+          disbursement_date?: string | null
+          duration_months: number
+          guarantor_1?: string | null
+          guarantor_2?: string | null
+          id?: string
+          interest_rate: number
+          loan_number: string
+          maturity_date?: string | null
+          member_id?: string | null
+          monthly_payment: number
+          outstanding_balance: number
+          principal_amount: number
+          purpose?: string | null
+          status?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          account_id?: string | null
+          created_at?: string | null
+          disbursement_date?: string | null
+          duration_months?: number
+          guarantor_1?: string | null
+          guarantor_2?: string | null
+          id?: string
+          interest_rate?: number
+          loan_number?: string
+          maturity_date?: string | null
+          member_id?: string | null
+          monthly_payment?: number
+          outstanding_balance?: number
+          principal_amount?: number
+          purpose?: string | null
+          status?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "loans_account_id_fkey"
+            columns: ["account_id"]
+            isOneToOne: false
+            referencedRelation: "accounts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "loans_guarantor_1_fkey"
+            columns: ["guarantor_1"]
+            isOneToOne: false
+            referencedRelation: "members"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "loans_guarantor_2_fkey"
+            columns: ["guarantor_2"]
+            isOneToOne: false
+            referencedRelation: "members"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "loans_member_id_fkey"
+            columns: ["member_id"]
+            isOneToOne: false
+            referencedRelation: "members"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      members: {
+        Row: {
+          address: string | null
+          created_at: string | null
+          date_of_birth: string | null
+          first_name: string
+          gender: string | null
+          id: string
+          join_date: string | null
+          last_name: string
+          member_number: string
+          national_id: string | null
+          phone: string | null
+          profile_id: string | null
+          status: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          address?: string | null
+          created_at?: string | null
+          date_of_birth?: string | null
+          first_name: string
+          gender?: string | null
+          id?: string
+          join_date?: string | null
+          last_name: string
+          member_number: string
+          national_id?: string | null
+          phone?: string | null
+          profile_id?: string | null
+          status?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          address?: string | null
+          created_at?: string | null
+          date_of_birth?: string | null
+          first_name?: string
+          gender?: string | null
+          id?: string
+          join_date?: string | null
+          last_name?: string
+          member_number?: string
+          national_id?: string | null
+          phone?: string | null
+          profile_id?: string | null
+          status?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "members_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
+          account_type: string | null
           created_at: string
           email: string | null
           id: string
@@ -27,6 +223,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          account_type?: string | null
           created_at?: string
           email?: string | null
           id: string
@@ -38,6 +235,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          account_type?: string | null
           created_at?: string
           email?: string | null
           id?: string
@@ -50,12 +248,89 @@ export type Database = {
         }
         Relationships: []
       }
+      transactions: {
+        Row: {
+          account_id: string | null
+          amount: number
+          balance_after: number | null
+          balance_before: number | null
+          created_at: string | null
+          description: string | null
+          id: string
+          member_id: string | null
+          processed_by: string | null
+          reference_number: string | null
+          transaction_date: string | null
+          transaction_number: string
+          transaction_type: string
+        }
+        Insert: {
+          account_id?: string | null
+          amount: number
+          balance_after?: number | null
+          balance_before?: number | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          member_id?: string | null
+          processed_by?: string | null
+          reference_number?: string | null
+          transaction_date?: string | null
+          transaction_number: string
+          transaction_type: string
+        }
+        Update: {
+          account_id?: string | null
+          amount?: number
+          balance_after?: number | null
+          balance_before?: number | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          member_id?: string | null
+          processed_by?: string | null
+          reference_number?: string | null
+          transaction_date?: string | null
+          transaction_number?: string
+          transaction_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "transactions_account_id_fkey"
+            columns: ["account_id"]
+            isOneToOne: false
+            referencedRelation: "accounts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "transactions_member_id_fkey"
+            columns: ["member_id"]
+            isOneToOne: false
+            referencedRelation: "members"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "transactions_processed_by_fkey"
+            columns: ["processed_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      generate_account_number: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
+      generate_member_number: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
     }
     Enums: {
       [_ in never]: never
