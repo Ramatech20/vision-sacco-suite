@@ -62,6 +62,21 @@ export const getUserMe = async () => {
   return user;
 };
 
+export const getUserProfile = async () => {
+  const { data: { user }, error: userError } = await supabase.auth.getUser();
+  if (userError) throw userError;
+  if (!user) throw new Error("No user found");
+
+  const { data: profile, error } = await supabase
+    .from('profiles')
+    .select('*')
+    .eq('id', user.id)
+    .single();
+  
+  if (error) throw error;
+  return profile;
+};
+
 export const login = async (data: { email: string; password: string }) => {
   const { data: authData, error } = await supabase.auth.signInWithPassword(data);
   if (error) throw error;

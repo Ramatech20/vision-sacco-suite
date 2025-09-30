@@ -20,11 +20,12 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { useNavigate } from "react-router-dom";
-import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/lib/auth";
+import { toast } from "sonner";
 
 export function DashboardHeader() {
   const navigate = useNavigate();
-  const { toast } = useToast();
+  const { user, logout } = useAuth();
 
   const notifications = [
     {
@@ -55,16 +56,13 @@ export function DashboardHeader() {
 
   const unreadCount = notifications.filter(n => n.unread).length;
 
-  const handleLogout = () => {
-    toast({
-      title: "Logged Out",
-      description: "You have been successfully logged out.",
-    });
-    // In a real app, you would clear tokens/session here
+  const handleLogout = async () => {
+    await logout();
+    toast.success("Logged out successfully");
   };
 
   const handleProfileClick = () => {
-    navigate('/settings?tab=profile');
+    navigate('/profile');
   };
 
   const handleBillingClick = () => {
@@ -169,16 +167,18 @@ export function DashboardHeader() {
           <DropdownMenuContent className="w-56" align="end" forceMount>
             <DropdownMenuLabel className="font-normal">
               <div className="flex flex-col space-y-1">
-                <p className="text-sm font-medium leading-none">John Doe</p>
+                <p className="text-sm font-medium leading-none">
+                  {user?.user_metadata?.name || "User"}
+                </p>
                 <p className="text-xs leading-none text-muted-foreground">
-                  admin@saccovision.com
+                  {user?.email || "user@saccovision.com"}
                 </p>
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={handleProfileClick}>
               <User className="mr-2 h-4 w-4" />
-              Profile Settings
+              My Profile
             </DropdownMenuItem>
             <DropdownMenuItem onClick={handleBillingClick}>
               <CreditCard className="mr-2 h-4 w-4" />
