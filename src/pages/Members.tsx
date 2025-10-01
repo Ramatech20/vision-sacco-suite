@@ -8,8 +8,20 @@ import { Badge } from "@/components/ui/badge";
 import { Users, UserPlus, UserCheck, TrendingUp, Plus, Download, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useEffect, useState } from "react";
-import { toast } from "@/components/ui/sonner";
-import { getMembers } from "@/lib/api";
+import { toast } from "sonner";
+import { getMembers, deleteMember } from "@/lib/api";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { MemberForm } from "@/components/members/MemberForm";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 export default function Members() {
   const memberMetrics = [
@@ -68,8 +80,12 @@ export default function Members() {
   const [membersData, setMembersData] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [selectedMember, setSelectedMember] = useState<any>(null);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [memberToDelete, setMemberToDelete] = useState<any>(null);
 
-  useEffect(() => {
+  const fetchMembers = () => {
     setLoading(true);
     getMembers()
       .then((data) => setMembersData(data))
@@ -78,7 +94,47 @@ export default function Members() {
         setError("Failed to fetch members");
       })
       .finally(() => setLoading(false));
+  };
+
+  useEffect(() => {
+    fetchMembers();
   }, []);
+
+  const handleAddMember = () => {
+    setSelectedMember(null);
+    setIsDialogOpen(true);
+  };
+
+  const handleEditMember = (member: any) => {
+    setSelectedMember(member);
+    setIsDialogOpen(true);
+  };
+
+  const handleDeleteClick = (member: any) => {
+    setMemberToDelete(member);
+    setIsDeleteDialogOpen(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!memberToDelete) return;
+    
+    try {
+      await deleteMember(memberToDelete.id);
+      toast.success("Member deleted successfully");
+      fetchMembers();
+    } catch (error) {
+      toast.error("Failed to delete member");
+    } finally {
+      setIsDeleteDialogOpen(false);
+      setMemberToDelete(null);
+    }
+  };
+
+  const handleFormSuccess = () => {
+    setIsDialogOpen(false);
+    setSelectedMember(null);
+    fetchMembers();
+  };
 
   return (
     <DashboardLayout>
@@ -95,7 +151,7 @@ export default function Members() {
               <Download className="h-4 w-4" />
               Export
             </Button>
-            <Button className="gap-2">
+            <Button className="gap-2" onClick={handleAddMember}>
               <Plus className="h-4 w-4" />
               Add Member
             </Button>
@@ -168,12 +224,43 @@ export default function Members() {
               description="Complete member directory with key information"
               columns={memberColumns}
               data={membersData}
-              // loading={loading} // Removed unsupported prop
               actions
+              onEdit={handleEditMember}
+              onDelete={handleDeleteClick}
             />
           </CardContent>
         </Card>
       </div>
+
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogContent className="sm:max-w-[500px]">
+          <DialogHeader>
+            <DialogTitle>{selectedMember ? "Edit Member" : "Add New Member"}</DialogTitle>
+            <DialogDescription>
+              {selectedMember ? "Update member information below." : "Fill in the member details below."}
+            </DialogDescription>
+          </DialogHeader>
+          <MemberForm member={selectedMember} onSuccess={handleFormSuccess} />
+        </DialogContent>
+      </Dialog>
+
+      <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permanently delete the member{" "}
+              {memberToDelete?.first_name} {memberToDelete?.last_name}.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDeleteConfirm} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </DashboardLayout>
   );
 }

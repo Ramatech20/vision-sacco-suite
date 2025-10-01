@@ -32,6 +32,8 @@ interface DataTableProps {
   data: Record<string, any>[];
   actions?: boolean;
   onRowClick?: (row: Record<string, any>) => void;
+  onEdit?: (row: Record<string, any>) => void;
+  onDelete?: (row: Record<string, any>) => void;
 }
 
 export function DataTable({
@@ -41,6 +43,8 @@ export function DataTable({
   data,
   actions = true,
   onRowClick,
+  onEdit,
+  onDelete,
 }: DataTableProps) {
   const formatCellValue = (value: any, type: ColumnType = "text") => {
     switch (type) {
@@ -106,7 +110,7 @@ export function DataTable({
                     </TableCell>
                   ))}
                   {actions && (
-                    <TableCell>
+                    <TableCell onClick={(e) => e.stopPropagation()}>
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                           <Button
@@ -122,14 +126,30 @@ export function DataTable({
                             <Eye className="mr-2 h-4 w-4" />
                             View Details
                           </DropdownMenuItem>
-                          <DropdownMenuItem className="cursor-pointer">
-                            <Edit className="mr-2 h-4 w-4" />
-                            Edit
-                          </DropdownMenuItem>
-                          <DropdownMenuItem className="cursor-pointer text-destructive">
-                            <Trash2 className="mr-2 h-4 w-4" />
-                            Delete
-                          </DropdownMenuItem>
+                          {onEdit && (
+                            <DropdownMenuItem 
+                              className="cursor-pointer"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                onEdit(row);
+                              }}
+                            >
+                              <Edit className="mr-2 h-4 w-4" />
+                              Edit
+                            </DropdownMenuItem>
+                          )}
+                          {onDelete && (
+                            <DropdownMenuItem 
+                              className="cursor-pointer text-destructive"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                onDelete(row);
+                              }}
+                            >
+                              <Trash2 className="mr-2 h-4 w-4" />
+                              Delete
+                            </DropdownMenuItem>
+                          )}
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </TableCell>

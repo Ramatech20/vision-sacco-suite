@@ -1,88 +1,114 @@
-import { useState } from "react";
-import { createMember, updateMember } from "@/lib/api";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { createMember, updateMember } from "@/lib/api";
+import { toast } from "sonner";
 
 interface MemberFormProps {
   member?: any;
   onSuccess?: () => void;
 }
 
-export default function MemberForm({ member, onSuccess }: MemberFormProps) {
-  const [firstName, setFirstName] = useState(member?.firstName || "");
-  const [lastName, setLastName] = useState(member?.lastName || "");
-  const [nationalId, setNationalId] = useState(member?.nationalId || "");
-  const [phone, setPhone] = useState(member?.phone || "");
-  const [email, setEmail] = useState(member?.email || "");
+export function MemberForm({ member, onSuccess }: MemberFormProps) {
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [nationalId, setNationalId] = useState("");
+  const [phone, setPhone] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+
+  useEffect(() => {
+    if (member) {
+      setFirstName(member.first_name || "");
+      setLastName(member.last_name || "");
+      setNationalId(member.national_id || "");
+      setPhone(member.phone || "");
+    } else {
+      setFirstName("");
+      setLastName("");
+      setNationalId("");
+      setPhone("");
+    }
+  }, [member]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setError("");
+
+    const data = { 
+      first_name: firstName, 
+      last_name: lastName, 
+      national_id: nationalId, 
+      phone 
+    };
+
     try {
       if (member?.id) {
-        await updateMember(member.id, { firstName, lastName, nationalId, phone, email });
+        await updateMember(member.id, data);
+        toast.success("Member updated successfully");
       } else {
-        await createMember({ firstName, lastName, nationalId, phone, email });
+        await createMember(data);
+        toast.success("Member created successfully");
       }
-      if (onSuccess) onSuccess();
+      onSuccess?.();
     } catch (err: any) {
-      setError(err.message || "Failed to save member");
+      toast.error(err.message || "Failed to save member");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <Card className="w-full max-w-lg shadow-card">
-      <CardHeader>
-        <CardTitle>{member ? "Update Member" : "Create Member"}</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <Input
-            type="text"
-            placeholder="First Name"
-            value={firstName}
-            onChange={e => setFirstName(e.target.value)}
-            required
-          />
-          <Input
-            type="text"
-            placeholder="Last Name"
-            value={lastName}
-            onChange={e => setLastName(e.target.value)}
-            required
-          />
-          <Input
-            type="text"
-            placeholder="National ID"
-            value={nationalId}
-            onChange={e => setNationalId(e.target.value)}
-            required
-          />
-          <Input
-            type="text"
-            placeholder="Phone"
-            value={phone}
-            onChange={e => setPhone(e.target.value)}
-            required
-          />
-          <Input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={e => setEmail(e.target.value)}
-          />
-          {error && <div className="text-red-500 text-sm">{error}</div>}
-          <Button type="submit" className="w-full" disabled={loading}>
-            {loading ? (member ? "Updating..." : "Creating...") : member ? "Update" : "Create"}
-          </Button>
-        </form>
-      </CardContent>
-    </Card>
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <div className="space-y-2">
+        <Label htmlFor="firstName">First Name</Label>
+        <Input
+          id="firstName"
+          placeholder="First Name"
+          value={firstName}
+          onChange={(e) => setFirstName(e.target.value)}
+          required
+        />
+      </div>
+      
+      <div className="space-y-2">
+        <Label htmlFor="lastName">Last Name</Label>
+        <Input
+          id="lastName"
+          placeholder="Last Name"
+          value={lastName}
+          onChange={(e) => setLastName(e.target.value)}
+          required
+        />
+      </div>
+      
+      <div className="space-y-2">
+        <Label htmlFor="nationalId">National ID</Label>
+        <Input
+          id="nationalId"
+          placeholder="National ID"
+          value={nationalId}
+          onChange={(e) => setNationalId(e.target.value)}
+          required
+        />
+      </div>
+      
+      <div className="space-y-2">
+        <Label htmlFor="phone">Phone</Label>
+        <Input
+          id="phone"
+          placeholder="Phone"
+          value={phone}
+          onChange={(e) => setPhone(e.target.value)}
+          required
+        />
+      </div>
+
+      <div className="flex justify-end gap-2 pt-4">
+        <Button type="submit" disabled={loading}>
+          {loading ? "Saving..." : member ? "Update Member" : "Create Member"}
+        </Button>
+      </div>
+    </form>
   );
 }
