@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { CreditCard, TrendingUp, AlertTriangle, Users, Plus, Download } from "lucide-react";
 import { useEffect, useState } from "react";
-import { getReports } from "@/lib/api";
+import { getLoans } from "@/lib/api";
 
 export default function Loans() {
   const loanMetrics = [
@@ -69,7 +69,7 @@ export default function Loans() {
 
   useEffect(() => {
     setLoading(true);
-    getReports("balance-sheet")
+    getLoans()
       .then((data) => setLoansData(data))
       .catch(() => setError("Failed to fetch loans"))
       .finally(() => setLoading(false));
