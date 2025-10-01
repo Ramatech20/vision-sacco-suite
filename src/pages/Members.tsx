@@ -60,8 +60,8 @@ export default function Members() {
     { key: "memberNo", label: "Member #", type: "text" as const },
     { key: "name", label: "Full Name", type: "text" as const },
     { key: "phone", label: "Phone", type: "text" as const },
+    { key: "email", label: "Email", type: "text" as const },
     { key: "joinDate", label: "Join Date", type: "date" as const },
-    { key: "savings", label: "Savings Balance", type: "currency" as const },
     { key: "status", label: "Status", type: "status" as const }
   ];
 

@@ -74,13 +74,13 @@ const transactionColumns = [
 ];
 
 import { useEffect, useState } from "react";
+import { getHealth } from "@/lib/api";
 
 const Index = () => {
-  const [apiStatus, setApiStatus] = useState<string>("");
+  const [apiStatus, setApiStatus] = useState<string>("checking...");
 
   useEffect(() => {
-    fetch("http://localhost:4000/health")
-      .then((res) => res.json())
+    getHealth()
       .then((data) => setApiStatus(data.status))
       .catch(() => setApiStatus("error"));
   }, []);

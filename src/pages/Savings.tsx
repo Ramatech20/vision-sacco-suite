@@ -57,9 +57,9 @@ export default function Savings() {
   const savingsColumns = [
     { key: "accountNo", label: "Account", type: "text" as const },
     { key: "member", label: "Member Name", type: "text" as const },
+    { key: "type", label: "Account Type", type: "text" as const },
     { key: "balance", label: "Current Balance", type: "currency" as const },
-    { key: "lastDeposit", label: "Last Deposit", type: "currency" as const },
-    { key: "depositDate", label: "Last Transaction", type: "date" as const },
+    { key: "openedDate", label: "Opened Date", type: "date" as const },
     { key: "status", label: "Status", type: "status" as const }
   ];
 
