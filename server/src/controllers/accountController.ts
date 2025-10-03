@@ -3,8 +3,9 @@ import { Request, Response } from "express";
 import { getRepository } from "typeorm";
 import { Account } from "../entities/Account";
 import { Member } from "../entities/Member";
+import { logAction } from "../utils/auditLogger";
 
-export const openAccount = async (req: Request, res: Response) => {
+export const openAccount = async (req: any, res: Response) => {
   try {
     const { memberId, type } = req.body;
 
@@ -15,6 +16,13 @@ export const openAccount = async (req: Request, res: Response) => {
     const accountRepo = getRepository(Account);
     const account = accountRepo.create({ member, type });
     await accountRepo.save(account);
+
+    // log audit (best-effort)
+    try {
+      if (req.user && req.user.id) await logAction(req.user.id, "OPEN_ACCOUNT", `Account ${account.id} opened for Member ${member.id}`);
+    } catch (e) {
+      console.error("Audit log failed", e);
+    }
 
     res.status(201).json(account);
   } catch (err) {
@@ -30,13 +38,4 @@ export const listAccounts = async (req: Request, res: Response) => {
   } catch (err) {
     res.status(500).json({ error: "Failed to fetch accounts" });
   }
-  // src/controllers/accountController.ts
-import { logAction } from "../utils/auditLogger";
-
-// inside openAccount
-await accountRepo.save(account);
-
-// log who opened the account
-await logAction(req.user.id, "OPEN_ACCOUNT", `Account ${account.id} opened for Member ${member.id}`);
-
 };

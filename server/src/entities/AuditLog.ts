@@ -4,17 +4,17 @@ import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn } from "typeor
 @Entity()
 export class AuditLog {
   @PrimaryGeneratedColumn("uuid")
-  id: string;
+  id!: string;
 
   @Column()
-  userId: string;
+  userId!: string;
 
   @Column()
-  action: string; // e.g. "CREATED_ACCOUNT", "DEPOSIT", "LOGIN"
+  action!: string; // e.g. "CREATED_ACCOUNT", "DEPOSIT", "LOGIN"
 
   @Column({ nullable: true })
-  details: string;
+  details!: string;
 
   @CreateDateColumn()
-  timestamp: Date;
+  timestamp!: Date;
 }

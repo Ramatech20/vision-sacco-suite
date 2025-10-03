@@ -6,20 +6,20 @@ import { Transaction } from "./Transaction";
 @Entity()
 export class Account {
   @PrimaryGeneratedColumn("uuid")
-  id: string;
+  id!: string;
 
   @Column()
-  type: string; // e.g. savings | loan
+  type!: string; // e.g. savings | loan
 
   @Column({ type: "decimal", precision: 12, scale: 2, default: 0 })
-  balance: number;
+  balance!: number;
 
   @ManyToOne(() => Member, (member) => member.accounts)
-  member: Member;
+  member!: Member;
 
   @OneToMany(() => Transaction, (txn) => txn.account)
-  transactions: Transaction[];
+  transactions!: Transaction[];
 
   @CreateDateColumn()
-  openedAt: Date;
+  openedAt!: Date;
 }

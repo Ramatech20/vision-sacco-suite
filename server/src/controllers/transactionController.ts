@@ -3,8 +3,9 @@ import { Request, Response } from "express";
 import { getManager } from "typeorm";
 import { Account } from "../entities/Account";
 import { Transaction } from "../entities/Transaction";
+import { logAction } from "../utils/auditLogger";
 
-export const createTransaction = async (req: Request, res: Response) => {
+export const createTransaction = async (req: any, res: Response) => {
   const { accountId, amount, type, description } = req.body;
 
   if (!["credit", "debit"].includes(type)) {
@@ -39,6 +40,20 @@ export const createTransaction = async (req: Request, res: Response) => {
       });
       await txnRepo.save(txn);
 
+      // record audit log if user present
+      try {
+        if (req.user && req.user.id) {
+          await logAction(
+            req.user.id,
+            type === "credit" ? "DEPOSIT" : "WITHDRAWAL",
+            `${type} of ${amount} on Account ${account.id}`
+          );
+        }
+      } catch (e) {
+        // non-fatal: audit logging failure shouldn't block response
+        console.error("Audit log failed", e);
+      }
+
       res.status(201).json({ account, txn });
     });
   } catch (err: any) {
@@ -55,13 +70,4 @@ export const listTransactions = async (req: Request, res: Response) => {
   } catch (err) {
     res.status(500).json({ error: "Failed to fetch transactions" });
   }
-  // src/controllers/transactionController.ts
-import { logAction } from "../utils/auditLogger";
-
-// inside createTransaction, after txn is saved
-await logAction(
-  req.user.id,
-  type === "credit" ? "DEPOSIT" : "WITHDRAWAL",
-  `${type} of ${amount} on Account ${account.id}`
-);
 };

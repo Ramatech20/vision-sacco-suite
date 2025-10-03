@@ -3,6 +3,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { getRepository } from "typeorm";
 import { User } from "../entities/User";
+import { logAction } from "../utils/auditLogger";
 
 export const register = async (req: Request, res: Response) => {
   try {
@@ -18,6 +19,7 @@ export const register = async (req: Request, res: Response) => {
 
     res.status(201).json({ message: "User registered" });
   } catch (err) {
+    console.error("Registration error", err);
     res.status(500).json({ error: "Registration failed" });
   }
 };
@@ -32,20 +34,23 @@ export const login = async (req: Request, res: Response) => {
     const valid = await bcrypt.compare(password, user.passwordHash);
     if (!valid) return res.status(401).json({ error: "Invalid credentials" });
 
-    const token = jwt.sign(
+    const secret = process.env.JWT_SECRET || "";
+    const token = (jwt as any).sign(
       { id: user.id, role: user.role },
-      process.env.JWT_SECRET!,
+      secret,
       { expiresIn: process.env.JWT_EXPIRES_IN || "7d" }
     );
 
     res.json({ token });
+
+    // audit log (best-effort)
+    try {
+      await logAction(user.id, "LOGIN", `User ${user.email} logged in`);
+    } catch (e) {
+      console.error("Audit log failed", e);
+    }
   } catch (err) {
     res.status(500).json({ error: "Login failed" });
   }
-  // src/controllers/authController.ts
-import { logAction } from "../utils/auditLogger";
-
-// inside login, after successful token generation
-await logAction(user.id, "LOGIN", `User ${user.email} logged in`);
 };
 

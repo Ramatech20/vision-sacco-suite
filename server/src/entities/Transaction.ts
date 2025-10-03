@@ -5,20 +5,20 @@ import { Account } from "./Account";
 @Entity()
 export class Transaction {
   @PrimaryGeneratedColumn("uuid")
-  id: string;
+  id!: string;
 
   @ManyToOne(() => Account, (account) => account.transactions)
-  account: Account;
+  account!: Account;
 
   @Column({ type: "decimal", precision: 12, scale: 2 })
-  amount: number;
+  amount!: number;
 
   @Column()
-  type: string; // debit | credit
+  type!: string; // debit | credit
 
   @Column({ nullable: true })
-  description: string;
+  description!: string;
 
   @CreateDateColumn()
-  createdAt: Date;
+  createdAt!: Date;
 }
