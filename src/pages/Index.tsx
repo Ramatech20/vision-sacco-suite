@@ -2,6 +2,7 @@ import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { MetricCard } from "@/components/dashboard/MetricCard";
 import { FinancialChart } from "@/components/dashboard/FinancialChart";
 import { DataTable } from "@/components/dashboard/DataTable";
+import { useAuth } from "@/lib/auth";
 import {
   DollarSign,
   PiggyBank,
@@ -78,12 +79,16 @@ import { getHealth } from "@/lib/api";
 
 const Index = () => {
   const [apiStatus, setApiStatus] = useState<string>("checking...");
+  const { user, roles } = useAuth();
 
   useEffect(() => {
     getHealth()
       .then((data) => setApiStatus(data.status))
       .catch(() => setApiStatus("error"));
   }, []);
+
+  const userName = user?.user_metadata?.name || user?.email?.split('@')[0] || 'User';
+  const roleText = roles.length > 0 ? ` (${roles.join(', ')})` : '';
 
   return (
     <DashboardLayout>
@@ -93,7 +98,7 @@ const Index = () => {
           <div>
             <h1 className="text-3xl font-bold text-foreground">Dashboard</h1>
             <p className="text-muted-foreground">
-              Welcome back! Here's your financial overview.
+              Welcome back, {userName}{roleText}! Here's your financial overview.
             </p>
             <p className="text-xs mt-2">
               Backend API status: <span className="font-semibold">{apiStatus}</span>

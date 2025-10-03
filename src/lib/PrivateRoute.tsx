@@ -1,16 +1,37 @@
 import { Navigate } from "react-router-dom";
-import { useAuth } from "@/lib/auth";
+import { useAuth } from "./auth";
+import { Loader2 } from "lucide-react";
 
-export default function PrivateRoute({ children }: { children: JSX.Element }) {
-  const { session, loading } = useAuth();
-  
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-  
-  if (!session) {
-    return <Navigate to="/login" replace />;
-  }
-  
-  return children;
+interface PrivateRouteProps {
+  children: React.ReactNode;
+  requireAdmin?: boolean;
+  requireStaff?: boolean;
 }
+
+export function PrivateRoute({ children, requireAdmin, requireStaff }: PrivateRouteProps) {
+  const { user, loading, isAdmin, isStaff } = useAuth();
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  if (!user) {
+    return <Navigate to="/auth" replace />;
+  }
+
+  if (requireAdmin && !isAdmin) {
+    return <Navigate to="/" replace />;
+  }
+
+  if (requireStaff && !isStaff) {
+    return <Navigate to="/" replace />;
+  }
+
+  return <>{children}</>;
+}
+
+export default PrivateRoute;

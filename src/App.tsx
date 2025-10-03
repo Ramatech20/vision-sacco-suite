@@ -4,6 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/lib/auth";
+import { PrivateRoute } from "@/lib/PrivateRoute";
 import Index from "./pages/Index";
 import Reports from "./pages/Reports";
 import Settings from "./pages/Settings";
@@ -13,10 +14,10 @@ import Members from "./pages/Members";
 import Contributors from "./pages/Contributors";
 import Analytics from "./pages/Analytics";
 import NotFound from "./pages/NotFound";
-import Login from "./pages/Login";
-import Register from "./pages/Register";
+import AuthPage from "./pages/Auth";
 import Profile from "./pages/Profile";
 import Transfer from "./pages/Transfer";
+import Admin from "./pages/Admin";
 
 const queryClient = new QueryClient();
 
@@ -28,18 +29,20 @@ const App = () => (
       <BrowserRouter>
         <AuthProvider>
           <Routes>
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/" element={<Index />} />
-            <Route path="/loans" element={<Loans />} />
-            <Route path="/savings" element={<Savings />} />
-            <Route path="/members" element={<Members />} />
-            <Route path="/contributors" element={<Contributors />} />
-            <Route path="/analytics" element={<Analytics />} />
-            <Route path="/reports" element={<Reports />} />
-            <Route path="/settings" element={<Settings />} />
-            <Route path="/profile" element={<Profile />} />
-            <Route path="/transfer" element={<Transfer />} />
+            <Route path="/auth" element={<AuthPage />} />
+            <Route path="/login" element={<AuthPage />} />
+            <Route path="/register" element={<AuthPage />} />
+            <Route path="/" element={<PrivateRoute><Index /></PrivateRoute>} />
+            <Route path="/loans" element={<PrivateRoute><Loans /></PrivateRoute>} />
+            <Route path="/savings" element={<PrivateRoute><Savings /></PrivateRoute>} />
+            <Route path="/members" element={<PrivateRoute requireStaff><Members /></PrivateRoute>} />
+            <Route path="/contributors" element={<PrivateRoute><Contributors /></PrivateRoute>} />
+            <Route path="/analytics" element={<PrivateRoute requireStaff><Analytics /></PrivateRoute>} />
+            <Route path="/reports" element={<PrivateRoute requireStaff><Reports /></PrivateRoute>} />
+            <Route path="/settings" element={<PrivateRoute requireAdmin><Settings /></PrivateRoute>} />
+            <Route path="/admin" element={<PrivateRoute requireAdmin><Admin /></PrivateRoute>} />
+            <Route path="/profile" element={<PrivateRoute><Profile /></PrivateRoute>} />
+            <Route path="/transfer" element={<PrivateRoute requireStaff><Transfer /></PrivateRoute>} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
